@@ -87,6 +87,29 @@ const nextSlide = () => {
 const prevSlide = () => {
   currentIndex.value = (currentIndex.value - 1 + projects.length) % projects.length;
 };
+
+// Touch / Swipe Logic
+const touchStartX = ref(0);
+const touchEndX = ref(0);
+
+const handleTouchStart = (e: TouchEvent) => {
+  touchStartX.value = e.changedTouches[0].screenX;
+};
+
+const handleTouchEnd = (e: TouchEvent) => {
+  touchEndX.value = e.changedTouches[0].screenX;
+  handleSwipe();
+};
+
+const handleSwipe = () => {
+  const threshold = 50; // Minimum distance for swipe
+  if (touchStartX.value - touchEndX.value > threshold) {
+    nextSlide(); // Swiped left -> Next
+  }
+  if (touchEndX.value - touchStartX.value > threshold) {
+    prevSlide(); // Swiped right -> Prev
+  }
+};
 </script>
 
 <template>
@@ -100,27 +123,40 @@ const prevSlide = () => {
   >
     <SectionTitle title="Projetos em Destaque" subtitle="Projetos pessoais e trabalhos freelancer que desenvolvi." />
     
-    <div class="mt-10 relative max-w-7xl mx-auto">
+    <div 
+      class="mt-10 relative max-w-7xl mx-auto"
+      @touchstart="handleTouchStart"
+      @touchend="handleTouchEnd"
+    >
       
       <ProjectCard :project="currentProject" :isActive="true" :index="currentIndex" />
 
       <!-- Controls -->
-      <div class="flex justify-between items-center mt-8">
+      <div class="flex flex-col-reverse md:flex-row justify-between items-center mt-8 gap-6 md:gap-0">
          <div class="flex space-x-2">
            <button 
              v-for="(_, idx) in projects"
              :key="idx"
              @click="currentIndex = idx"
              :class="['w-12 h-1 rounded transition-all duration-300', idx === currentIndex ? 'bg-brand-accentLight dark:bg-brand-neon' : 'bg-slate-300 dark:bg-slate-700']"
+             :aria-label="'Ir para projeto ' + (idx + 1)"
            ></button>
          </div>
          
-         <div class="flex space-x-4">
-           <button @click="prevSlide" class="p-3 rounded-full border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-brand-accentLight dark:hover:bg-brand-neon hover:text-white dark:hover:text-brand-dark transition-colors">
-             <ArrowLeft :size="24" />
+         <div class="flex space-x-6">
+           <button 
+             @click="prevSlide" 
+             class="p-4 rounded-full border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-brand-accentLight dark:hover:bg-brand-neon hover:text-white dark:hover:text-brand-dark transition-colors active:scale-95"
+             aria-label="Projeto anterior"
+           >
+             <ArrowLeft :size="28" />
            </button>
-           <button @click="nextSlide" class="p-3 rounded-full border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-brand-accentLight dark:hover:bg-brand-neon hover:text-white dark:hover:text-brand-dark transition-colors">
-             <ArrowRight :size="24" />
+           <button 
+             @click="nextSlide" 
+             class="p-4 rounded-full border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-brand-accentLight dark:hover:bg-brand-neon hover:text-white dark:hover:text-brand-dark transition-colors active:scale-95"
+             aria-label="Próximo projeto"
+           >
+             <ArrowRight :size="28" />
            </button>
          </div>
       </div>
