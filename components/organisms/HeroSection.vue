@@ -16,7 +16,7 @@ import BaseButton from '../atoms/BaseButton.vue';
       </div>
       
       <h1 class="text-5xl md:text-7xl font-bold text-slate-900 dark:text-white mb-6 tracking-tight leading-tight animate-fade-in-up" style="animation-delay: 0.1s">
-        Sobre <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accentLight to-brand-secondary dark:from-brand-neon dark:to-brand-secondary">mim</span>
+        Software <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-accentLight to-brand-secondary dark:from-brand-neon dark:to-brand-secondary">Developer</span>
       </h1>
       
       <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto animate-fade-in-up md:leading-relaxed" style="animation-delay: 0.2s">
