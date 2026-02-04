@@ -46,9 +46,9 @@ const { elementRef, isVisible } = useIntersectionObserver(0.15);
         <div class="absolute inset-0 bg-gradient-to-tr from-brand-accentLight to-brand-secondary dark:from-brand-neon dark:to-brand-secondary rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
         <div class="relative bg-white dark:bg-slate-800 rounded-2xl p-2 border border-slate-200 dark:border-slate-700 shadow-xl">
           <img 
-            src="https://picsum.photos/600/600?grayscale" 
-            alt="Developer Profile" 
-            class="rounded-xl w-full object-cover shadow-inner grayscale hover:grayscale-0 transition-all duration-500"
+            src="/assets/images/about-image.png" 
+            alt="Desenvolvimento e Programação" 
+            class="rounded-xl w-full object-cover shadow-inner transition-all duration-500"
           />
         </div>
       </div>
