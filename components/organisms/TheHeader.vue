@@ -54,13 +54,13 @@ onUnmounted(() => {
 <template>
   <header 
     :class="[
-      'fixed top-0 left-0 w-full z-50 transition-all duration-300',
+      'fixed top-0 left-0 w-full z-50 transition-all duration-300 overflow-hidden',
       isScrolled 
         ? 'bg-white/80 dark:bg-brand-glass backdrop-blur-md border-b border-slate-200 dark:border-white/10 py-3 shadow-lg' 
-        : 'bg-transparent py-6'
+        : 'bg-transparent py-4 md:py-6'
     ]"
   >
-    <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
       <!-- Logo -->
       <TheLogo />
 

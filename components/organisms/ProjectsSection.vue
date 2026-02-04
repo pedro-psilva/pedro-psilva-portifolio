@@ -98,7 +98,7 @@ const prevSlide = () => {
       isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
     ]"
   >
-    <SectionTitle title="Projetos em Destaque" subtitle="Foco em resolver problemas reais com a ferramenta certa." />
+    <SectionTitle title="Projetos em Destaque" subtitle="Projetos pessoais e trabalhos freelancer que desenvolvi." />
     
     <div class="mt-10 relative max-w-7xl mx-auto">
       

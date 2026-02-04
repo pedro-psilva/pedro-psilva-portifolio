@@ -6,10 +6,10 @@ import BaseButton from '../atoms/BaseButton.vue';
 <template>
   <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden bg-slate-50 dark:bg-transparent transition-colors duration-300">
     <!-- Background Decorative Elements -->
-    <div class="absolute top-20 right-0 w-96 h-96 bg-cyan-200 dark:bg-brand-neon/20 rounded-full blur-3xl opacity-30 dark:opacity-20 -z-10 animate-pulse-slow"></div>
-    <div class="absolute bottom-20 left-0 w-72 h-72 bg-emerald-200 dark:bg-brand-secondary/20 rounded-full blur-3xl opacity-30 dark:opacity-20 -z-10 animate-pulse-slow"></div>
+    <div class="absolute top-20 -right-20 w-64 md:w-96 h-64 md:h-96 bg-cyan-200 dark:bg-brand-neon/20 rounded-full blur-3xl opacity-30 dark:opacity-20 -z-10 animate-pulse-slow"></div>
+    <div class="absolute bottom-20 -left-20 w-48 md:w-72 h-48 md:h-72 bg-emerald-200 dark:bg-brand-secondary/20 rounded-full blur-3xl opacity-30 dark:opacity-20 -z-10 animate-pulse-slow"></div>
 
-    <div class="max-w-4xl mx-auto px-6 text-center z-10">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center z-10">
       <div class="inline-flex items-center space-x-2 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full mb-8 backdrop-blur-sm animate-fade-in-up shadow-sm">
         <Code2 :size="16" class="text-brand-secondary" />
         <span class="text-xs md:text-sm font-mono text-slate-700 dark:text-brand-secondary">Software Developer</span>

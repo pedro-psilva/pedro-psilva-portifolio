@@ -1,60 +1,43 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 import SectionTitle from '../atoms/SectionTitle.vue';
-import BaseInput from '../atoms/BaseInput.vue';
-import BaseTextarea from '../atoms/BaseTextarea.vue';
-import BaseButton from '../atoms/BaseButton.vue';
 import { useIntersectionObserver } from '../../composables/useIntersectionObserver';
-import { Send, CheckCircle, AlertCircle } from 'lucide-vue-next';
+import { Mail, Phone, Github, Linkedin, Check } from 'lucide-vue-next';
 
 const { elementRef, isVisible } = useIntersectionObserver(0.15);
+const emailCopied = ref(false);
 
-const formData = reactive({
-  name: '',
-  email: '',
-  message: ''
-});
-
-const status = ref<'idle' | 'success' | 'error'>('idle');
-const errorMessage = ref('');
-
-const validateForm = (name: string, email: string, message: string) => {
-  if (!name.trim()) return "Por favor, digite seu nome.";
-  if (!email.trim()) return "O e-mail é obrigatório.";
-  
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return "Por favor, insira um e-mail válido.";
-  
-  if (!message.trim()) return "A mensagem não pode estar vazia.";
-  
-  return null;
-};
-
-const handleSubmit = (e: Event) => {
-  e.preventDefault();
-  
-  const error = validateForm(formData.name, formData.email, formData.message);
-  
-  if (error) {
-    status.value = 'error';
-    errorMessage.value = error;
-    return;
-  }
-
-  status.value = 'idle';
+const copyEmail = () => {
+  navigator.clipboard.writeText('pedro.ppsilva07@gmail.com');
+  emailCopied.value = true;
   setTimeout(() => {
-    alert(`Obrigado, ${formData.name}! Sua mensagem foi enviada com sucesso.\n\n(Simulação de envio)`);
-    formData.name = '';
-    formData.email = '';
-    formData.message = '';
-    status.value = 'success';
-    errorMessage.value = '';
-    
-    setTimeout(() => {
-      status.value = 'idle';
-    }, 3000);
-  }, 500);
+    emailCopied.value = false;
+  }, 2000);
 };
+
+const contacts = [
+  {
+    icon: Phone,
+    label: 'WhatsApp',
+    value: '(31) 97221-4333',
+    href: 'https://wa.me/5531972214333',
+    color: 'text-green-500'
+  },
+  {
+    icon: Linkedin,
+    label: 'LinkedIn',
+    value: '/in/pedro-paulo-ads',
+    href: 'https://www.linkedin.com/in/pedro-paulo-ads/',
+    color: 'text-blue-600'
+  },
+  {
+    icon: Github,
+    label: 'GitHub',
+    value: '/pedro-psilva',
+    href: 'https://github.com/pedro-psilva',
+    color: 'text-slate-800 dark:text-white'
+  }
+];
 </script>
 
 <template>
@@ -66,49 +49,47 @@ const handleSubmit = (e: Event) => {
       isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
     ]"
   >
-    <SectionTitle title="Entre em Contato" subtitle="Tem um projeto em mente ou quer apenas trocar uma ideia? Mande uma mensagem!" />
+    <SectionTitle title="Entre em Contato" subtitle="Vamos conversar? Entre em contato por qualquer um dos canais abaixo." />
     
-    <div class="max-w-2xl mx-auto bg-white dark:bg-slate-800/50 p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl backdrop-blur-sm">
-      
-      <form @submit="handleSubmit" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <BaseInput 
-            id="name" 
-            label="Nome" 
-            v-model="formData.name" 
-            placeholder="Seu nome" 
-          />
-          <BaseInput 
-            id="email" 
-            label="E-mail" 
-            type="email"
-            v-model="formData.email" 
-            placeholder="exemplo@email.com" 
-          />
-        </div>
-        
-        <BaseTextarea 
-          id="message" 
-          label="Mensagem" 
-          v-model="formData.message" 
-          placeholder="Como posso te ajudar?" 
-        />
+    <div class="max-w-3xl mx-auto mt-12">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <!-- Email Card - Copy to clipboard -->
+        <button 
+          @click="copyEmail"
+          class="group flex items-center gap-4 p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 text-left cursor-pointer"
+        >
+          <div :class="['p-3 rounded-xl bg-slate-100 dark:bg-slate-700/50', emailCopied ? 'text-green-500' : 'text-red-500']">
+            <Check v-if="emailCopied" :size="28" />
+            <Mail v-else :size="28" />
+          </div>
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">{{ emailCopied ? 'Copiado!' : 'E-mail' }}</p>
+            <p class="font-semibold text-slate-800 dark:text-white group-hover:text-brand-secondary transition-colors">
+              pedro.ppsilva07@gmail.com
+            </p>
+          </div>
+        </button>
 
-        <div v-if="status === 'error'" class="flex items-center text-red-500 text-sm bg-red-500/10 p-3 rounded-lg border border-red-500/20">
-          <AlertCircle :size="16" class="mr-2" />
-          {{ errorMessage }}
-        </div>
-
-        <div v-if="status === 'success'" class="flex items-center text-emerald-500 text-sm bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
-          <CheckCircle :size="16" class="mr-2" />
-          Mensagem enviada com sucesso!
-        </div>
-
-        <BaseButton type="submit" variant="primary">
-          <span>Enviar Mensagem</span>
-          <Send :size="18" class="ml-2" />
-        </BaseButton>
-      </form>
+        <!-- Other contacts -->
+        <a 
+          v-for="contact in contacts"
+          :key="contact.label"
+          :href="contact.href"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group flex items-center gap-4 p-6 bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+        >
+          <div :class="['p-3 rounded-xl bg-slate-100 dark:bg-slate-700/50', contact.color]">
+            <component :is="contact.icon" :size="28" />
+          </div>
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">{{ contact.label }}</p>
+            <p class="font-semibold text-slate-800 dark:text-white group-hover:text-brand-secondary transition-colors">
+              {{ contact.value }}
+            </p>
+          </div>
+        </a>
+      </div>
     </div>
   </section>
 </template>
