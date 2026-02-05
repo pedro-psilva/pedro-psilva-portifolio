@@ -108,6 +108,31 @@ const stopAutoPlay = () => {
   }
 };
 
+// Touch / Swipe Logic for mobile
+const touchStartX = ref(0);
+const touchEndX = ref(0);
+
+const handleTouchStart = (e: TouchEvent) => {
+  touchStartX.value = e.changedTouches[0].screenX;
+  stopAutoPlay();
+};
+
+const handleTouchEnd = (e: TouchEvent) => {
+  touchEndX.value = e.changedTouches[0].screenX;
+  handleSwipe();
+  startAutoPlay();
+};
+
+const handleSwipe = () => {
+  const threshold = 50; // Minimum distance for swipe
+  if (touchStartX.value - touchEndX.value > threshold) {
+    nextSlide(); // Swiped left -> Next
+  }
+  if (touchEndX.value - touchStartX.value > threshold) {
+    prevSlide(); // Swiped right -> Prev
+  }
+};
+
 onMounted(() => {
   startAutoPlay();
 });
@@ -185,20 +210,22 @@ const getCardStyle = (index: number) => {
       <SectionTitle title="Stack Tecnológica" subtitle="Minhas ferramentas organizadas por área de atuação." />
       
       <div 
-        class="relative mt-6 h-[620px] flex items-start justify-center perspective-1000"
+        class="relative mt-6 h-[520px] md:h-[620px] flex items-start justify-center perspective-1000"
         @mouseenter="stopAutoPlay"
         @mouseleave="startAutoPlay"
+        @touchstart="handleTouchStart"
+        @touchend="handleTouchEnd"
       >
-        <!-- Nav Buttons - Centered vertically relative to cards -->
+        <!-- Nav Buttons - Hidden on mobile, shown on desktop -->
         <button 
           @click="prevSlide"
-          class="absolute left-0 md:-left-4 xl:-left-12 z-40 top-[310px] -translate-y-1/2 p-3 bg-white/80 dark:bg-slate-800/80 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-brand-accentLight dark:hover:text-brand-neon hover:scale-110 transition-all duration-300 backdrop-blur-sm"
+          class="hidden md:block absolute left-0 md:-left-4 xl:-left-12 z-40 top-[310px] -translate-y-1/2 p-3 bg-white/80 dark:bg-slate-800/80 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-brand-accentLight dark:hover:text-brand-neon hover:scale-110 transition-all duration-300 backdrop-blur-sm"
         >
           <ChevronLeft :size="32" />
         </button>
         <button 
           @click="nextSlide"
-          class="absolute right-0 md:-right-4 xl:-right-12 z-40 top-[310px] -translate-y-1/2 p-3 bg-white/80 dark:bg-slate-800/80 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-brand-accentLight dark:hover:text-brand-neon hover:scale-110 transition-all duration-300 backdrop-blur-sm"
+          class="hidden md:block absolute right-0 md:-right-4 xl:-right-12 z-40 top-[310px] -translate-y-1/2 p-3 bg-white/80 dark:bg-slate-800/80 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-brand-accentLight dark:hover:text-brand-neon hover:scale-110 transition-all duration-300 backdrop-blur-sm"
         >
           <ChevronRight :size="32" />
         </button>
@@ -213,7 +240,7 @@ const getCardStyle = (index: number) => {
               @click="setSlide(index)"
             >
               <div 
-                class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden h-[600px] flex flex-col"
+                class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden h-[480px] md:h-[600px] flex flex-col"
               >
                 <!-- Card Header -->
                 <div class="p-6 md:p-8 border-b border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50">
@@ -243,19 +270,43 @@ const getCardStyle = (index: number) => {
         </div>
       </div>
 
-      <!-- Simple indicators for 3D state -->
-      <div class="flex justify-center mt-6 space-x-3">
-        <button 
-          v-for="(_, index) in skillGroups" 
-          :key="index"
-          @click="setSlide(index)"
-          :class="[
-            'h-1.5 rounded-full transition-all duration-300',
-            activeIndex === index 
-              ? 'w-8 bg-brand-secondary' 
-              : 'w-2 bg-slate-300 dark:bg-slate-700 hover:bg-brand-accentLight'
-          ]"
-        ></button>
+      <!-- Controls section - arrows + indicators together on mobile -->
+      <div class="flex flex-col items-center gap-4 mt-4 md:mt-6">
+        <!-- Mobile nav buttons -->
+        <div class="flex md:hidden items-center justify-center gap-6">
+          <button 
+            @click="prevSlide"
+            class="p-3 bg-white/80 dark:bg-slate-800/80 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-brand-accentLight dark:hover:text-brand-neon active:scale-95 transition-all duration-300 backdrop-blur-sm"
+          >
+            <ChevronLeft :size="28" />
+          </button>
+          <button 
+            @click="nextSlide"
+            class="p-3 bg-white/80 dark:bg-slate-800/80 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-brand-accentLight dark:hover:text-brand-neon active:scale-95 transition-all duration-300 backdrop-blur-sm"
+          >
+            <ChevronRight :size="28" />
+          </button>
+        </div>
+
+        <!-- Dot indicators -->
+        <div class="flex justify-center space-x-3">
+          <button 
+            v-for="(_, index) in skillGroups" 
+            :key="index"
+            @click="setSlide(index)"
+            :class="[
+              'h-1.5 rounded-full transition-all duration-300',
+              activeIndex === index 
+                ? 'w-8 bg-brand-secondary' 
+                : 'w-2 bg-slate-300 dark:bg-slate-700 hover:bg-brand-accentLight'
+            ]"
+          ></button>
+        </div>
+
+        <!-- Swipe hint for mobile -->
+        <p class="md:hidden text-xs text-slate-400 dark:text-slate-500 text-center">
+          Deslize para navegar
+        </p>
       </div>
 
     </div>

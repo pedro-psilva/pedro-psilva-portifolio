@@ -15,11 +15,28 @@ const navItems: NavItem[] = [
 ];
 
 const isScrolled = ref(false);
+const isHeaderHidden = ref(false);
 const isMobileMenuOpen = ref(false);
 const isDark = ref(false);
+const lastScrollY = ref(0);
 
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 50;
+  const currentScrollY = window.scrollY;
+  
+  isScrolled.value = currentScrollY > 50;
+  
+  // Hide header when scrolling down, show when scrolling up
+  if (currentScrollY > lastScrollY.value && currentScrollY > 100) {
+    // Scrolling down & past threshold - hide header
+    isHeaderHidden.value = true;
+    // Close mobile menu when hiding header
+    isMobileMenuOpen.value = false;
+  } else {
+    // Scrolling up - show header
+    isHeaderHidden.value = false;
+  }
+  
+  lastScrollY.value = currentScrollY;
 };
 
 const toggleTheme = () => {
@@ -43,7 +60,7 @@ onMounted(() => {
     isDark.value = false;
     document.documentElement.classList.remove('dark');
   }
-  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('scroll', handleScroll, { passive: true });
 });
 
 onUnmounted(() => {
@@ -54,10 +71,11 @@ onUnmounted(() => {
 <template>
   <header 
     :class="[
-      'fixed top-0 left-0 w-full z-50 transition-all duration-300 overflow-hidden',
+      'fixed top-0 left-0 w-full z-50 transition-all duration-300',
       isScrolled 
         ? 'bg-white/80 dark:bg-brand-glass backdrop-blur-md border-b border-slate-200 dark:border-white/10 py-3 shadow-lg' 
-        : 'bg-transparent py-4 md:py-6'
+        : 'bg-transparent py-4 md:py-6',
+      isHeaderHidden ? '-translate-y-full' : 'translate-y-0'
     ]"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">

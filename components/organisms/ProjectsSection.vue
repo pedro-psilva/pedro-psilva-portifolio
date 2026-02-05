@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import SectionTitle from '../atoms/SectionTitle.vue';
 import ProjectCard from '../molecules/ProjectCard.vue';
 import { useIntersectionObserver } from '../../composables/useIntersectionObserver';
@@ -78,14 +78,47 @@ const projects: Project[] = [
 ];
 
 const currentIndex = ref(0);
+const isTransitioning = ref(false);
 const currentProject = computed(() => projects[currentIndex.value]);
 
+// Preload all project images on mount for smoother transitions
+const preloadedImages = ref<HTMLImageElement[]>([]);
+
+onMounted(() => {
+  projects.forEach((project) => {
+    const img = new Image();
+    img.src = project.image as string;
+    preloadedImages.value.push(img);
+  });
+});
+
+const changeSlide = (newIndex: number) => {
+  if (isTransitioning.value || newIndex === currentIndex.value) return;
+  
+  isTransitioning.value = true;
+  
+  // Short delay for fade-out animation, then change
+  setTimeout(() => {
+    currentIndex.value = newIndex;
+    // Allow time for image to render before fading in
+    setTimeout(() => {
+      isTransitioning.value = false;
+    }, 100);
+  }, 200);
+};
+
 const nextSlide = () => {
-  currentIndex.value = (currentIndex.value + 1) % projects.length;
+  const newIndex = (currentIndex.value + 1) % projects.length;
+  changeSlide(newIndex);
 };
 
 const prevSlide = () => {
-  currentIndex.value = (currentIndex.value - 1 + projects.length) % projects.length;
+  const newIndex = (currentIndex.value - 1 + projects.length) % projects.length;
+  changeSlide(newIndex);
+};
+
+const goToSlide = (idx: number) => {
+  changeSlide(idx);
 };
 
 // Touch / Swipe Logic
@@ -128,38 +161,60 @@ const handleSwipe = () => {
       @touchstart="handleTouchStart"
       @touchend="handleTouchEnd"
     >
-      
-      <ProjectCard :project="currentProject" :isActive="true" :index="currentIndex" />
+      <!-- Project Card with smooth transition -->
+      <div 
+        :class="[
+          'transition-all duration-300 ease-in-out',
+          isTransitioning ? 'opacity-0 scale-[0.98]' : 'opacity-100 scale-100'
+        ]"
+      >
+        <ProjectCard :project="currentProject" :isActive="true" :index="currentIndex" />
+      </div>
 
-      <!-- Controls -->
-      <div class="flex flex-col-reverse md:flex-row justify-between items-center mt-8 gap-6 md:gap-0">
-         <div class="flex space-x-2">
-           <button 
-             v-for="(_, idx) in projects"
-             :key="idx"
-             @click="currentIndex = idx"
-             :class="['w-12 h-1 rounded transition-all duration-300', idx === currentIndex ? 'bg-brand-accentLight dark:bg-brand-neon' : 'bg-slate-300 dark:bg-slate-700']"
-             :aria-label="'Ir para projeto ' + (idx + 1)"
-           ></button>
-         </div>
-         
-         <div class="flex space-x-6">
+      <!-- Controls - Reorganized for mobile -->
+      <div class="flex flex-col md:flex-row justify-between items-center mt-6 md:mt-8 gap-4 md:gap-0">
+         <!-- Navigation arrows - First on mobile -->
+         <div class="flex space-x-4 md:space-x-6 order-first md:order-last">
            <button 
              @click="prevSlide" 
-             class="p-4 rounded-full border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-brand-accentLight dark:hover:bg-brand-neon hover:text-white dark:hover:text-brand-dark transition-colors active:scale-95"
+             :disabled="isTransitioning"
+             class="p-3 md:p-4 rounded-full border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-brand-accentLight dark:hover:bg-brand-neon hover:text-white dark:hover:text-brand-dark transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
              aria-label="Projeto anterior"
            >
-             <ArrowLeft :size="28" />
+             <ArrowLeft :size="24" class="md:w-7 md:h-7" />
            </button>
            <button 
              @click="nextSlide" 
-             class="p-4 rounded-full border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-brand-accentLight dark:hover:bg-brand-neon hover:text-white dark:hover:text-brand-dark transition-colors active:scale-95"
+             :disabled="isTransitioning"
+             class="p-3 md:p-4 rounded-full border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-brand-accentLight dark:hover:bg-brand-neon hover:text-white dark:hover:text-brand-dark transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
              aria-label="Próximo projeto"
            >
-             <ArrowRight :size="28" />
+             <ArrowRight :size="24" class="md:w-7 md:h-7" />
            </button>
          </div>
+
+         <!-- Dot indicators -->
+         <div class="flex space-x-2 order-last md:order-first">
+           <button 
+             v-for="(_, idx) in projects"
+             :key="idx"
+             @click="goToSlide(idx)"
+             :disabled="isTransitioning"
+             :class="[
+               'h-1.5 md:h-1 rounded transition-all duration-300 disabled:cursor-not-allowed',
+               idx === currentIndex 
+                 ? 'w-8 md:w-12 bg-brand-accentLight dark:bg-brand-neon' 
+                 : 'w-4 md:w-12 bg-slate-300 dark:bg-slate-700 hover:bg-brand-accentLight/50'
+             ]"
+             :aria-label="'Ir para projeto ' + (idx + 1)"
+           ></button>
+         </div>
       </div>
+
+      <!-- Swipe hint for mobile -->
+      <p class="md:hidden text-xs text-slate-400 dark:text-slate-500 text-center mt-4">
+        Deslize para navegar
+      </p>
 
     </div>
   </section>

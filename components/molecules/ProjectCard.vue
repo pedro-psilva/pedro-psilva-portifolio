@@ -22,7 +22,7 @@ watch(() => props.project, () => {
   <div class="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-xl dark:shadow-2xl flex flex-col md:flex-row h-auto md:h-[450px]">
     
     <!-- Image / Live Preview Side -->
-    <div class="md:w-1/2 relative overflow-hidden group bg-slate-100 dark:bg-slate-900">
+    <div class="md:w-1/2 relative overflow-hidden group bg-slate-100 dark:bg-slate-900 h-48 md:h-auto">
       
       <!-- Static Image Mode -->
       <div v-if="!showPreview" class="w-full h-full relative">
@@ -40,9 +40,9 @@ watch(() => props.project, () => {
           :href="project.demoUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 bg-brand-accentLight hover:bg-cyan-700 dark:bg-brand-neon dark:text-brand-dark dark:hover:bg-cyan-300 text-white px-6 py-3 rounded-full font-bold shadow-xl opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center space-x-2 hover:scale-105"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 bg-brand-accentLight hover:bg-cyan-700 dark:bg-brand-neon dark:text-brand-dark dark:hover:bg-cyan-300 text-white px-4 md:px-6 py-2 md:py-3 rounded-full font-bold shadow-xl opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center space-x-2 hover:scale-105 text-sm md:text-base"
         >
-          <ExternalLink :size="20" />
+          <ExternalLink :size="18" class="md:w-5 md:h-5" />
           <span>Visitar Site</span>
         </a>
       </div>
@@ -71,39 +71,40 @@ watch(() => props.project, () => {
       </div>
     </div>
 
-    <!-- Content Side -->
-    <div class="md:w-1/2 p-6 md:p-10 flex flex-col justify-center relative">
+    <!-- Content Side - Optimized for mobile -->
+    <div class="md:w-1/2 p-4 md:p-10 flex flex-col justify-center relative">
       
-      <div class="mb-6">
-        <span class="text-brand-accentLight dark:text-brand-neon font-mono text-sm tracking-wider uppercase mb-2 block">{{ project.category || 'Portfolio' }}</span>
-        <h3 class="text-3xl font-bold text-slate-800 dark:text-white mb-4">{{ project.title }}</h3>
-        <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6 text-sm md:text-base">
+      <div class="mb-3 md:mb-6">
+        <span class="text-brand-accentLight dark:text-brand-neon font-mono text-xs md:text-sm tracking-wider uppercase mb-1 md:mb-2 block">{{ project.category || 'Portfolio' }}</span>
+        <h3 class="text-xl md:text-3xl font-bold text-slate-800 dark:text-white mb-2 md:mb-4">{{ project.title }}</h3>
+        <p class="text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base line-clamp-3 md:line-clamp-none">
           {{ project.description }}
         </p>
       </div>
 
-      <div class="flex flex-wrap gap-2 mb-8">
+      <!-- Tags - Hidden on mobile to save space -->
+      <div class="hidden md:flex flex-wrap gap-2 mb-8">
         <BaseTag v-for="tag in project.tags" :key="tag">{{ tag }}</BaseTag>
       </div>
 
-      <div class="flex space-x-4 mt-auto">
+      <div class="flex space-x-3 md:space-x-4 mt-auto">
         <a 
           v-if="project.repoUrl"
           :href="project.repoUrl" 
           target="_blank" 
           rel="noopener noreferrer"
-          class="flex items-center space-x-2 text-white bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 px-6 py-3 rounded-lg transition-all"
+          class="flex items-center space-x-2 text-white bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 px-4 md:px-6 py-2 md:py-3 rounded-lg transition-all text-sm md:text-base"
         >
-          <Github :size="18" />
+          <Github :size="16" class="md:w-[18px] md:h-[18px]" />
           <span>Repo</span>
         </a>
         <a 
           :href="project.demoUrl" 
           target="_blank" 
           rel="noopener noreferrer"
-          class="flex items-center space-x-2 text-white bg-brand-accentLight hover:bg-cyan-700 dark:text-brand-dark dark:bg-brand-neon dark:hover:bg-cyan-300 px-6 py-3 rounded-lg font-bold transition-all shadow-lg shadow-cyan-500/20"
+          class="flex items-center space-x-2 text-white bg-brand-accentLight hover:bg-cyan-700 dark:text-brand-dark dark:bg-brand-neon dark:hover:bg-cyan-300 px-4 md:px-6 py-2 md:py-3 rounded-lg font-bold transition-all shadow-lg shadow-cyan-500/20 text-sm md:text-base"
         >
-          <ExternalLink :size="18" />
+          <ExternalLink :size="16" class="md:w-[18px] md:h-[18px]" />
           <span>Visitar</span>
         </a>
       </div>
